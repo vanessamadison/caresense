@@ -2,3 +2,5 @@ transformers
 torch
 streamlit
 altair
+joblib
+scikit-learn
