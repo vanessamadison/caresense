@@ -1,3 +1,6 @@
+import pandas as pd
+
+df = pd.read_csv("data/symptoms.csv")
 from transformers import pipeline
 
 # Initialize the zero-shot classification pipeline

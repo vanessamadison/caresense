@@ -1,0 +1,15 @@
+symptom_text,urgency
+"Headache with mild fatigue",Low Urgency
+"Fever and chills for 2 days",Medium Urgency
+"Shortness of breath and chest pain",High Urgency
+"Nasal congestion and sneezing",Low Urgency
+"Persistent cough with wheezing",Medium Urgency
+"Severe abdominal pain",High Urgency
+"Fatigue and muscle aches",Medium Urgency
+"Loss of consciousness",High Urgency
+"Sore throat and mild cough",Low Urgency
+"High fever and rash",High Urgency
+"Diarrhea for two days",Medium Urgency
+"Sudden vision loss",High Urgency
+"Anxiety and rapid heartbeat",Medium Urgency
+"Minor cut with bleeding",Low Urgency
