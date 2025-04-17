@@ -1,6 +1,7 @@
-transformers
-torch
-streamlit
-altair
-joblib
+pandas
 scikit-learn
+joblib
+streamlit
+# transformers  ← only needed for Hugging Face models
+# torch          ← only needed if using deep learning (e.g. BERT, GPT)
+# altair         ← only needed for charts/visualizations
