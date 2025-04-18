@@ -1,9 +1,8 @@
 import joblib
 
-# Map urgency index back to label
-urgency_map = {0: "Low Urgency", 1: "Medium Urgency", 2: "High Urgency"}
+model = joblib.load("models/caresense_model.pkl")
 
-# Enrichment based on urgency level
+urgency_map = {0: "Low Urgency", 1: "Medium Urgency", 2: "High Urgency"}
 urgency_enrichment = {
     "Low Urgency": {
         "care_type": "At-home care or pharmacy consultation",
@@ -19,14 +18,9 @@ urgency_enrichment = {
     }
 }
 
-# Load trained model
-model = joblib.load("models/caresense_model.pkl")
-
-# Function to use in Streamlit app
 def classify_symptom(text):
     prediction = model.predict([text])[0]
     confidence = model.predict_proba([text])[0][prediction]
-
     urgency_label = urgency_map[prediction]
     enrichment = urgency_enrichment[urgency_label]
 

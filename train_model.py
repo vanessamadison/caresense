@@ -6,7 +6,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
-# STEP 1: Enriched Labels Map
+df = pd.read_csv("data/extracted_symptoms_train.csv")
+
 enriched_map = {
     "Dengue": {"urgency": "High Urgency", "care_type": "Fluids & monitoring", "specialty": "Infectious Disease"},
     "Pneumonia": {"urgency": "High Urgency", "care_type": "Antibiotics & rest", "specialty": "Pulmonology"},
@@ -14,25 +15,18 @@ enriched_map = {
     "Hypertension": {"urgency": "Medium Urgency", "care_type": "Lifestyle + medication", "specialty": "Cardiology"},
     "allergy": {"urgency": "Low Urgency", "care_type": "Antihistamines", "specialty": "Immunology"},
     "Acne": {"urgency": "Low Urgency", "care_type": "Topical treatment", "specialty": "Dermatology"},
+    "Gastroesophageal Reflux Disease": {"urgency": "Medium Urgency", "care_type": "Diet changes + PPI", "specialty": "Gastroenterology"},
+    "Common Cold": {"urgency": "Low Urgency", "care_type": "Rest & hydration", "specialty": "General Practice"},
+    "Migraine": {"urgency": "Medium Urgency", "care_type": "Pain management", "specialty": "Neurology"},
+    "Bronchial Asthma": {"urgency": "High Urgency", "care_type": "Inhalers, steroids", "specialty": "Pulmonology"},
 }
 
-# STEP 2: Load CSV
-df = pd.read_csv("data/Symptom2Disease_dataset_train.csv", header=None, names=["image_path", "Diagnosis"])
+df = df[df["disease"].isin(enriched_map.keys())]
+df["urgency"] = df["disease"].map(lambda d: enriched_map[d]["urgency"])
+df["care_type"] = df["disease"].map(lambda d: enriched_map[d]["care_type"])
+df["specialty"] = df["disease"].map(lambda d: enriched_map[d]["specialty"])
+df["urgency_encoded"] = df["urgency"].map({"Low Urgency": 0, "Medium Urgency": 1, "High Urgency": 2})
 
-# STEP 3: Filter by only mapped diseases
-df = df[df["Diagnosis"].isin(enriched_map.keys())]
-
-# STEP 4: Add Enriched Columns
-df["urgency"] = df["Diagnosis"].map(lambda d: enriched_map[d]["urgency"])
-df["care_type"] = df["Diagnosis"].map(lambda d: enriched_map[d]["care_type"])
-df["specialty"] = df["Diagnosis"].map(lambda d: enriched_map[d]["specialty"])
-df["symptom_text"] = df["Diagnosis"] + " symptoms"
-
-# STEP 5: Encode target
-urgency_map = {"Low Urgency": 0, "Medium Urgency": 1, "High Urgency": 2}
-df["urgency_encoded"] = df["urgency"].map(urgency_map)
-
-# STEP 6: Train
 X = df["symptom_text"]
 y = df["urgency_encoded"]
 
@@ -44,7 +38,6 @@ pipeline = Pipeline([
 ])
 pipeline.fit(X_train, y_train)
 
-# STEP 7: Save model
 os.makedirs("models", exist_ok=True)
 joblib.dump(pipeline, "models/caresense_model.pkl")
 

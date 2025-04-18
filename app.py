@@ -110,5 +110,5 @@ Suggested Specialty: {result['specialty']}
 
 # Disclaimer
 st.markdown("""---  
-⚠️ *Disclaimer: This tool is for educational and experimental purposes only. It is not a substitute for professional medical advice. Always consult a licensed physician.*
+*Disclaimer: This tool is for educational and experimental purposes only. It is not a substitute for professional medical advice. Always consult a licensed physician.*
 """)
