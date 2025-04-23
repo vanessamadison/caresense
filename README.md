@@ -76,6 +76,16 @@ tesseract --version
 
 ## Demo
 
+### Test Prompts
+
+My sinuses feel stuffy, and my eyes have been quite red. |
+simply lack energy, and my throat has been really scratchy.
+Along with the swelling in my lymph nodes, I've also been
+coughing up a lot of phlegm
+
+My muscles have been feeling really weak, and my neck has been extremely tight. I've been experiencing a lot of stiffness when | walk about and my joints have been swollen. Walking has also been really uncomfortable.
+
+I'm having a hard time breathing and | feel really uncomfortable. I'm sweating a lot, my chest hurts and my heart is beating fast. The mucus I'm coughing up is brownish.
 
 ![Example Output Screenshot](./assets/screenshots/results.png)
 
