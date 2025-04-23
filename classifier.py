@@ -1,30 +1,31 @@
-# classifier.py
-
 import joblib
 
+# Map urgency index to readable label
 urgency_map = {0: "Low Urgency", 1: "Medium Urgency", 2: "High Urgency"}
 
-# Expanded care mapping
+# Expanded care guidance based on urgency
 urgency_enrichment = {
     "Low Urgency": {
-        "care_type": "At-home care, hydration, rest",
+        "care_type": "Rest, hydration, over-the-counter remedies.",
         "specialty": "General Practice",
-        "guideline": "Use over-the-counter remedies. Monitor symptoms for changes."
+        "next_steps": "Monitor symptoms. Reassess if no improvement in 48 hours."
     },
     "Medium Urgency": {
-        "care_type": "Primary care visit recommended",
+        "care_type": "Schedule a primary care appointment.",
         "specialty": "Internal Medicine",
-        "guideline": "Schedule a visit if symptoms persist beyond 24–48 hours."
+        "next_steps": "Book a check-up. Consider labs or further evaluation."
     },
     "High Urgency": {
-        "care_type": "Immediate medical attention required",
+        "care_type": "Seek immediate medical attention.",
         "specialty": "Emergency Medicine",
-        "guideline": "Go to urgent care or call emergency services if symptoms worsen."
+        "next_steps": "Go to the ER or urgent care center now."
     }
 }
 
+# Load trained model
 model = joblib.load("models/caresense_model.pkl")
 
+# Main classifier function
 def classify_symptom(text):
     prediction = model.predict([text])[0]
     confidence = model.predict_proba([text])[0][prediction]
@@ -37,5 +38,5 @@ def classify_symptom(text):
         "confidence": confidence * 100,
         "care_type": enrichment["care_type"],
         "specialty": enrichment["specialty"],
-        "guideline": enrichment["guideline"]
+        "next_steps": enrichment["next_steps"]
     }
