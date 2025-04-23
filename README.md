@@ -10,7 +10,7 @@
 ---
 
 ## Recognition 
-CareSense was awarded 3rd Place at AurariaHack 2025 among over 40 teams for its accessible design, social impact, and meaningful approach to AI in healthcare. The judges recognized its potential for real-world triage assistance, especially in under-resourced contexts.
+CareSense was awarded 3rd Place at AurariaHack 2025 among over 21 teams for its accessible design, social impact, and meaningful approach to AI in healthcare. The judges recognized its potential for real-world triage assistance, especially in under-resourced contexts.
 
 --- 
 
