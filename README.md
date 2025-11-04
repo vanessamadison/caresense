@@ -1,164 +1,365 @@
-# CareSense
+# 𝘊𝘢𝘳𝘦𝘚𝘦𝘯𝘴𝘦 𝘟
 
-[![Python](https://img.shields.io/badge/Python-black?style=flat-square&logo=python&logoColor=white)](https://www.python.org)  [![scikit-learn](https://img.shields.io/badge/scikit--learn-black?style=flat-square&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)  [![Streamlit](https://img.shields.io/badge/Streamlit-black?style=flat-square&logo=streamlit&logoColor=white)](https://streamlit.io)  [![Tesseract OCR](https://img.shields.io/badge/Tesseract-OCR-black?style=flat-square&logo=tesseract&logoColor=white)](https://github.com/tesseract-ocr/tesseract)  [![MIT License](https://img.shields.io/badge/License-MIT-black?style=flat-square)](LICENSE)  [![Made by Nessa Kodo](https://img.shields.io/badge/Made%20by-Nessa%20Kodo-black?style=flat-square)](https://nessakodo.com)
-
----
-
-
-> Deployed at: [caresense.streamlit.app](https://caresense.streamlit.app) *(Demo instance)*
-
----
-
-## Recognition 
-CareSense was awarded 3rd Place at AurariaHack 2025 among over 21 teams for its accessible design, social impact, and meaningful approach to AI in healthcare. The judges recognized its potential for real-world triage assistance, especially in under-resourced contexts.
-
---- 
-
-## Future Enhancements
-While CareSense currently provides secure, local-only triage, future iterations are focused on privacy-first healthcare logging and integration. Our roadmap includes:
-
-### HealthKit Integration (Apple Devices)
-Allow users to securely forward symptom logs to Apple Health without storing any data on external servers. This enables:
-
-- Seamless aggregation with Oura Ring, Apple Watch, and other biometrics
-- Symptom-based radar models aligned with circadian data, vitals, and stress markers
-- Automatic timestamping and encrypted log forwarding
-
-### Emotion-Aware NLP
-- Implement emotion tagging to separate psychological states from physical symptoms. For example:
-"I feel anxious" would not affect triage urgency
-*But it would trigger a CareSense Insight about stress-related care options (e.g. mental health referral, mindfulness support, etc.)*
-
-This allows the tool to empathize intelligently—not escalate unnecessarily, but still surface holistic care guidance.
-
-### Visual Timeline & Triage Graph
-- Logged symptoms will be visualized over time with urgency gradients, helping users see how their health evolves—and when it’s time to act.
+![Version](https://img.shields.io/badge/Version-v0.3.0-000000?style=for-the-badge&logo=github&logoColor=white)
+[![Python](https://img.shields.io/badge/Python_3.11+-000000?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-000000?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Pyfhel](https://img.shields.io/badge/Homomorphic_Encryption-Pyfhel-000000?style=for-the-badge)](https://github.com/ibarrond/Pyfhel)
+[![DiffPrivLib](https://img.shields.io/badge/Differential_Privacy-IBM-000000?style=for-the-badge)](https://github.com/IBM/diffprivlib)
+[![MIT License](https://img.shields.io/badge/License-MIT-000000?style=for-the-badge)](LICENSE)
+[![Made by Nessa Kodo](https://img.shields.io/badge/Made%20by-Nessa%20Kodo-000000?style=for-the-badge)](https://nessakodo.com)
 
 ---
 
-## Project Overview
+## 𝘜𝘱𝘥𝘢𝘵𝘦𝘴 (𝘷0.3.0)
 
-CareSense is an AI-powered symptom triage assistant that helps users determine the urgency of their symptoms before visiting a healthcare provider. By using real patient data and natural language processing, it offers immediate feedback, care guidance, and specialist recommendations.
+CareSense X evolves into a **full-scale production-grade decision intelligence platform**:
 
----
+### 🧠 **Explainable AI**
+- **SHAP** and **LIME** explainability modules with security hardening
+- Per-prediction feature importance + global model insights
+- Transparent decision reasoning for clinician trust
 
-## Problem
+### 📄 **Multi-Format Document Processing**
+- Secure **PDF**, **DOCX**, **TXT**, and **email** parsing
+- Content sanitization + PII detection
+- File size validation + MIME type enforcement
+- Hash-based audit trails
 
-Many people delay care or misuse emergency services due to confusion or lack of access to accurate medical triage. This can lead to worsened conditions, overcrowded ERs, and lost time for both patients and providers.
+### 🤖 **Hybrid ML Architecture**
+- **Classical**: Calibrated logistic regression (TF-IDF + SVD)
+- **Modern**: Sentence-transformers for semantic embeddings
+- **Flexible**: Switch models based on use case
 
----
+### 🏥 **Clinician Review Workflow**
+- Human-in-the-loop dashboard with priority queuing
+- Approval, rejection, and escalation workflows
+- Override capabilities with audit logging
+- Real-time case synchronization
 
-## Solution
-
-CareSense classifies free-text symptom descriptions into urgency levels—low, medium, or high—and provides actionable insights based on symptom context and frequency.
-
----
-
-## Features
-
-- Accepts natural language symptom descriptions  
-- Returns urgency level with confidence scores  
-- Suggests care guidance and medical specialty  
-- Tracks previously entered symptoms and flags recurring issues  
-- Optional OCR mode for extracting symptoms from image-based reports
-
----
-
-## How to Run Locally
-
-1. **Install dependencies**
-
-```bash
-pip install -r requirements.txt
-```
-
-2. **Extract data (optional if already extracted)**
-
-```bash
-python ocr_extract.py
-```
-
-3. **Train the model**
-
-```bash
-python train_model.py
-```
-
-4. **Run the app**
-
-```bash
-python -m streamlit run app.py
-```
+### 🔒 **Production Security**
+- **Rate limiting**: Token bucket algorithm per IP + endpoint
+- **Security headers**: CSP, HSTS, X-Frame-Options, etc.
+- **Input validation**: Comprehensive sanitization across all endpoints
+- **Audit trails**: Every action signed with Ed25519
 
 ---
 
-## Windows-Specific Setup Notes
+## 𝘔𝘪𝘴𝘴𝘪𝘰𝘯
 
-If using OCR (image-based input):
+Healthcare teams need **privacy-preserving automation** that still learns from patient data while maintaining human oversight. CareSense X delivers explainable triage intelligence, biometric authentication, document processing, and zero-trust workflow orchestration without exposing PHI—aligning with HIPAA, GDPR, and emerging FDA CDS guidance.
 
-- Install [Tesseract for Windows](https://github.com/tesseract-ocr/tesseract)  
-- Add the path to `tesseract.exe` to your system `PATH` (e.g. `C:\Program Files\Tesseract-OCR\tesseract.exe`)
-- Confirm installation:
+---
 
-```bash
-tesseract --version
+## 𝘚𝘰𝘭𝘶𝘵𝘪𝘰𝘯
+
+- **Privacy-preserving biometric attestation** powered by CKKS homomorphic encryption via Pyfhel
+- **Explainable predictions** with SHAP/LIME showing top features driving each decision
+- **Multi-format document ingestion** (PDF, DOCX, email) with secure parsing and PII detection
+- **Hybrid ML pipeline**: classical + transformer models for accuracy and interpretability
+- **Clinician review dashboard**: human-in-the-loop workflow with override and audit trail
+- **Encrypted symptom processing** with calibrated ML, differential privacy, and structured audit logs
+- **Automated care workflows**: compliance-signed triage decisions ready for orchestration (EHR hooks, alerting)
+- **Production security**: rate limiting, security headers, input sanitization, audit logging
+- **Continuous compliance**: Ed25519-signed JSONL audit trail + security policy for rapid incident response
+
+---
+
+## 𝘌𝘯𝘩𝘢𝘯𝘤𝘦𝘥 𝘈𝘳𝘤𝘩𝘪𝘵𝘦𝘤𝘵𝘶𝘳𝘦
+
+```mermaid
+flowchart TB
+    Client[Zero-Trust Client] -->|OAuth + FHE token| API[FastAPI Secure Core]
+    Client -->|Document Upload| DocParser[Document Parser]
+
+    DocParser -->|Sanitized Text| API
+    API -->|Rate Limited| RateLimit[Rate Limiter]
+    RateLimit -->|Validated| Triage[Triage Service]
+
+    Triage -->|Classical ML| Model1[TF-IDF + Logistic]
+    Triage -->|Transformer| Model2[Sentence-BERT]
+
+    Model1 -->|Prediction| Explain[SHAP/LIME Explainer]
+    Model2 -->|Prediction| Explain
+
+    Explain -->|Explained Result| ReviewQueue[Clinician Review Queue]
+    ReviewQueue -->|Human Approval| Clinician[Clinician Dashboard]
+
+    Clinician -->|Decision + Override| Audit[Compliance Trail]
+    Triage -->|Audit payload| Audit
+    API -->|Secure storage| Vault[Encrypted Store]
+    Audit -->|Signed JSONL| Ledger[(Immut. Ledger)]
 ```
 
 ---
 
-## Demo
+## 𝘛𝘦𝘤𝘩 𝘚𝘵𝘢𝘤𝘬
 
-*CareSense evaluates natural language symptom descriptions and assigns an urgency level, recommended care, and medical specialty. Below are examples of inputs and their corresponding urgency assessments:*
+### **Core**
+- **Backend**: FastAPI, Uvicorn, Pydantic v2, Structlog, Python 3.11+
+- **Frontend**: React 18 + Vite 5, TailwindCSS, React Query 5, Heroicons, zod
 
-### Test Prompts
+### **ML & AI**
+- **Classical ML**: Scikit-learn 1.4, Calibrated LogisticRegression, Truncated SVD
+- **Transformers**: Sentence-Transformers, HuggingFace Transformers, PyTorch
+- **Explainability**: SHAP 0.45+, LIME 0.2+
+- **Privacy**: DiffPrivLib (differential privacy ready)
 
-### Low Urgency
-Input:
-"My sinuses feel stuffy, and my eyes have been quite red. I simply lack energy, and my throat has been really scratchy. Along with the swelling in my lymph nodes, I've also been coughing up a lot of phlegm."
+### **Document Processing**
+- **Parsers**: PyPDF (PDF), python-docx (DOCX), email-reply-parser
+- **Sanitization**: Bleach (HTML), python-magic (MIME detection)
+- **OCR**: Pytesseract, Pillow
 
-Result:
+### **Privacy & Security**
+- **Encryption**: Pyfhel (CKKS), Cryptography (Ed25519, Fernet)
+- **Authentication**: python-jose (JWT), passlib (bcrypt)
+- **Rate Limiting**: slowapi, Redis-ready
+- **Security**: Comprehensive input validation, security headers, CORS
 
-Urgency Level: Low
-
-Care Recommendation: At-home care or pharmacy consultation
-
-Suggested Specialty: General Practice
-CareSense interpreted this as a common cold or mild respiratory infection, manageable with rest and over-the-counter medication.
-
-### Medium Urgency
-Input:
-"My muscles have been feeling really weak, and my neck has been extremely tight. I've been experiencing a lot of stiffness when I walk about and my joints have been swollen. Walking has also been really uncomfortable."
-
-Result:
-
-Urgency Level: Medium
-
-Care Recommendation: Schedule with a primary care provider
-
-Suggested Specialty: Internal Medicine or Rheumatology
-CareSense flagged this as potentially indicative of an inflammatory or musculoskeletal condition requiring non-emergency follow-up.
-
-### High Urgency
-Input:
-"I'm having a hard time breathing and I feel really uncomfortable. I'm sweating a lot, my chest hurts and my heart is beating fast. The mucus I'm coughing up is brownish."
-
-Result:
-
-Urgency Level: High
-
-Care Recommendation: Seek immediate medical attention
-
-Suggested Specialty: Emergency Medicine
-This description matches symptoms of acute respiratory distress or infection, and CareSense escalates the case for urgent care.
-
-
-![Example Output Screenshot](./assets/screenshots/results.png)
-
+### **Tooling & Ops**
+- **Development**: Docker, Make, Ruff, Pytest
+- **Security Scanning**: pip-audit, Safety
+- **Monitoring**: Prometheus metrics, Structlog
+- **Performance**: uvloop, orjson
 
 ---
 
-## Credits
+## 𝘈𝘗𝘐 𝘙𝘰𝘶𝘵𝘦𝘴
 
-Created and maintained by [Nessa Kodo](https://nessakodo.com) built during AurariaHack 2025 at CU Denver.
+### **Core Triage**
+| Method | Path | Purpose |
+|:---|:---|:---|
+| `GET` | `/version` | Service version + build info |
+| `GET` | `/v1/health` | Readiness probe |
+| `POST` | `/v1/triage` | Submit symptoms with optional biometric proof |
+
+### **Biometrics**
+| Method | Path | Purpose |
+|:---|:---|:---|
+| `POST` | `/v1/biometrics/enrol` | Encrypt + register biometric embeddings |
+
+### **Explainability** (NEW)
+| Method | Path | Purpose |
+|:---|:---|:---|
+| `POST` | `/v1/explain` | Get SHAP or LIME explanation for prediction |
+| `GET` | `/v1/explain/global` | Get global feature importance across model |
+
+### **Document Processing** (NEW)
+| Method | Path | Purpose |
+|:---|:---|:---|
+| `POST` | `/v1/documents/upload` | Upload & parse PDF/DOCX/TXT/email |
+| `POST` | `/v1/documents/triage` | Run triage on parsed document text |
+
+### **Clinician Review** (NEW)
+| Method | Path | Purpose |
+|:---|:---|:---|
+| `GET` | `/v1/review/pending` | Get pending review cases with priority filtering |
+| `GET` | `/v1/review/{case_id}` | Get full case details including explanation |
+| `POST` | `/v1/review/submit` | Submit clinician review decision with override |
+
+### **Compliance**
+| Method | Path | Purpose |
+|:---|:---|:---|
+| `GET` | `/v1/compliance/public-key` | Retrieve Ed25519 public key for audit verification |
+
+All responses include signed audit references for immutable compliance review.
+
+---
+
+## 𝘘𝘶𝘪𝘤𝘬 𝘚𝘵𝘢𝘳𝘵 (𝘓𝘰𝘤𝘢𝘭 𝘙𝘶𝘯)
+
+**Requirements**
+
+- Python ≥ 3.11
+- Node.js ≥ 20
+- Tesseract OCR binary (for dataset extraction)
+- Optional: Docker 26+, Make, UV loop support
+- **For macOS**: OpenMP (via Homebrew) for pyfhel compilation
+
+**Setup**
+
+```bash
+# Install OpenMP on macOS (required for pyfhel)
+brew install libomp
+
+# Install dependencies
+make install              # installs runtime + dev dependencies
+
+# Build dataset and train model
+python ocr_extract.py     # builds hashed OCR dataset (once)
+make train                # trains calibrated DP triage model
+
+# Run backend
+make serve                # boots FastAPI with reload on :8080
+
+# Run frontend (separate terminal)
+cd frontend && npm run dev  # launches command center on :5173
+```
+
+Browse interactive docs at `http://localhost:8080/docs` (Swagger) or `http://localhost:8080/redoc`.
+
+Frontend command center available at `http://localhost:5173`.
+
+**Docker Compose (Recommended)**
+
+```bash
+docker compose up --build
+# FastAPI → http://localhost:8080
+# Frontend → http://localhost:4173
+```
+
+---
+
+## 𝘜𝘴𝘢𝘨𝘦 𝘌𝘹𝘢𝘮𝘱𝘭𝘦𝘴
+
+### **1. Basic Triage**
+
+```bash
+curl -X POST http://localhost:8080/v1/triage \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symptoms": "severe chest pain, shortness of breath, sweating"
+  }'
+```
+
+### **2. Explainable Prediction**
+
+```bash
+curl -X POST http://localhost:8080/v1/explain \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "severe headache, blurred vision, dizziness",
+    "method": "shap"
+  }'
+```
+
+### **3. Document Upload**
+
+```bash
+curl -X POST http://localhost:8080/v1/documents/upload \
+  -F "file=@patient_report.pdf"
+```
+
+### **4. Clinician Review**
+
+```bash
+# Get pending cases
+curl "http://localhost:8080/v1/review/pending?clinician_id=dr_smith&priority=high"
+
+# Submit review
+curl -X POST http://localhost:8080/v1/review/submit \
+  -H "Content-Type: application/json" \
+  -d '{
+    "case_id": "abc123...",
+    "clinician_id": "dr_smith",
+    "decision": "approved",
+    "notes": "Confirmed high urgency, appropriate recommendation"
+  }'
+```
+
+---
+
+## 𝘊𝘭𝘪𝘦𝘯𝘵 𝘌𝘹𝘱𝘦𝘳𝘪𝘦𝘯𝘤𝘦 (𝘍𝘳𝘰𝘯𝘵𝘦𝘯𝘥)
+
+- **Biometric enrollment wizard** with synthetic demo embeddings
+- **Document upload interface** with drag-drop support
+- **Encrypted triage submission** with urgency badges and compliance signature cards
+- **Explainability visualization** showing top features and importance scores
+- **Clinician review dashboard** with priority queuing and real-time updates
+- **Live compliance ledger key viewer** for transparent verification
+- **React Query cache** with offline-friendly refresh behaviour
+- **Tailwind-driven dark holographic UI** tuned for clinical command centers
+
+---
+
+## 𝘚𝘦𝘤𝘶𝘳𝘪𝘵𝘺 𝘍𝘦𝘢𝘵𝘶𝘳𝘦𝘴
+
+### **Defense in Depth**
+1. **Input Validation**: Length limits, type checking, pattern validation
+2. **Sanitization**: HTML stripping, XSS prevention, SQL injection protection
+3. **Rate Limiting**: 60 req/min per IP with burst tolerance
+4. **Security Headers**: CSP, HSTS, X-Frame-Options, X-Content-Type-Options
+5. **Audit Logging**: Ed25519-signed immutable trails for all actions
+
+### **Privacy Controls**
+- **No PHI storage**: Only hashes and encrypted data
+- **PII detection**: Automatic flagging of sensitive data in documents
+- **Homomorphic encryption**: Biometric comparisons without decryption
+- **Differential privacy**: Model training with privacy guarantees
+
+### **Compliance**
+- **HIPAA-aligned**: Encrypted storage, audit trails, access controls
+- **GDPR-ready**: Data minimization, right to erasure support
+- **FDA CDS guidance**: Human oversight, explainability, audit trails
+
+---
+
+## 𝘈𝘶𝘥𝘪𝘵 & 𝘊𝘰𝘮𝘱𝘭𝘪𝘢𝘯𝘤𝘦
+
+- `data/audit_logs.jsonl`: append-only ledger signed via Ed25519
+- `data/crypto/`: CKKS context + secret keys (auto-generated, keep out of VCS)
+- `SecureStore`: Fernet-encrypted biometric payloads on disk
+- `Makefile security-scan`: pip-audit + Safety to flag vulnerable dependencies
+- `docs/openapi.yaml`: machine-readable spec for downstream SDK generation
+- `docs/architecture.md`: living diagram + hardening checklist for reviews
+- **Review queue**: JSONL-based clinician decision audit trail
+
+---
+
+## 𝘔𝘓 𝘖𝘱𝘴 & 𝘗𝘦𝘳𝘧𝘰𝘳𝘮𝘢𝘯𝘤𝘦
+
+- **Classical Model**: Balanced, calibrated logistic regression with class-weighting and isotonic calibration
+- **Transformer Model**: Sentence-BERT embeddings + lightweight classifier for semantic understanding
+- **Explainability**: SHAP kernel explainer + LIME text explainer for transparent decisions
+- `reports/model_card.md`: continuously regenerated model card + micro-F1 metrics
+- `reports/model_report.json`: raw classification report for dashboards
+- **Differential privacy ready**: plug in DP noise budgets via DiffPrivLib wrappers
+- **Frontend overlays**: display metrics and compliance handles for human-in-the-loop review
+
+---
+
+## 𝘙𝘰𝘢𝘥𝘮𝘢𝘱 (𝘷0.4+)
+
+- **Advanced ML**: Fine-tuned medical BERT models with domain adaptation
+- **Multi-modal**: Image + text analysis for comprehensive medical assessment
+- **Zero-knowledge proofs**: Enhanced biometric attestation
+- **Secure enclave deployment**: AWS Nitro Enclaves / Azure SEV-SNP profiles
+- **FHIR R5 bridge**: EHR integration with consent-aware data minimization
+- **Real-time alerts**: Clinician notification webhooks (Slack, Teams, PagerDuty)
+- **Generative explanations**: Guardrailed LLM explanations with PHI redaction
+- **Mobile apps**: iOS/Android clinician review clients
+- **Advanced analytics**: Outcome tracking, model performance monitoring, bias detection
+
+---
+
+## 𝘋𝘦𝘷𝘦𝘭𝘰𝘱𝘮𝘦𝘯𝘵 & 𝘛𝘦𝘴𝘵𝘪𝘯𝘨
+
+```bash
+# Run tests
+make test
+
+# Lint code
+make lint
+
+# Format code
+make format
+
+# Security scan
+make security-scan
+
+# Generate OpenAPI spec
+make openapi
+```
+
+---
+
+## 𝘊𝘳𝘦𝘥𝘪𝘵𝘴 & 𝘚𝘶𝘱𝘱𝘰𝘳𝘵
+
+Built with care by [Nessa Kodo](https://nessakodo.com). Licensed under the MIT License. For enterprise pilots or security reviews, reach out at `security@caresense.app`.
+
+**Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Security**: See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+Stay vigilant. Stay encrypted. Stay explainable.
 
 ---

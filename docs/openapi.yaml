@@ -1,0 +1,145 @@
+openapi: 3.1.0
+info:
+  title: CareSense Secure Triage API
+  version: 0.2.0
+  description: |
+    Privacy-preserving biometric triage service with homomorphic encryption and compliance logging.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+paths:
+  /version:
+    get:
+      summary: Service version
+      responses:
+        '200':
+          description: Version payload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+  /v1/health:
+    get:
+      summary: Health probe
+      responses:
+        '200':
+          description: OK response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /v1/biometrics/enrol:
+    post:
+      summary: Enrol biometric embedding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BiometricEnrollmentRequest'
+      responses:
+        '200':
+          description: Enrolment successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BiometricEnrollmentResponse'
+        '422':
+          description: Validation error
+  /v1/triage:
+    post:
+      summary: Run symptom triage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriageRequest'
+      responses:
+        '200':
+          description: Triage result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriageResponse'
+        '401':
+          description: Biometric verification failed
+        '422':
+          description: Validation error
+  /v1/compliance/public-key:
+    get:
+      summary: Retrieve Ed25519 public key
+      responses:
+        '200':
+          description: Public key PEM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompliancePublicKeyResponse'
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+    BiometricEnrollmentRequest:
+      type: object
+      required: [vector]
+      properties:
+        vector:
+          type: array
+          minItems: 16
+          items:
+            type: number
+    BiometricEnrollmentResponse:
+      type: object
+      properties:
+        token_id:
+          type: string
+        ciphertext:
+          type: string
+    TriageRequest:
+      type: object
+      required: [symptoms]
+      properties:
+        symptoms:
+          type: string
+          minLength: 10
+        biometric_token:
+          type: string
+          nullable: true
+        biometric_vector:
+          type: array
+          nullable: true
+          items:
+            type: number
+    TriageResponse:
+      type: object
+      properties:
+        urgency:
+          type: string
+        confidence:
+          type: number
+        recommended_care:
+          type: string
+        specialty:
+          type: string
+        next_steps:
+          type: string
+        audit_reference:
+          type: string
+          nullable: true
+    CompliancePublicKeyResponse:
+      type: object
+      properties:
+        algorithm:
+          type: string
+          example: ed25519
+        public_key_pem:
+          type: string
+          description: PEM encoded public key

@@ -1,7 +1,51 @@
-pandas
-scikit-learn
-joblib
-streamlit
-# transformers  ← only needed for Hugging Face models
-# torch          ← only needed if using deep learning (e.g. BERT, GPT)
-# altair         ← only needed for charts/visualizations
+# Core API Framework
+fastapi>=0.110.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.1
+pydantic-settings>=2.0.0
+orjson>=3.10.0
+structlog>=24.1.0
+
+# Data Science & ML
+pandas>=2.2.2
+numpy>=1.26.4
+scikit-learn>=1.4.2
+joblib>=1.4.2
+diffprivlib>=0.6.4
+
+# Explainability & Interpretability
+shap>=0.45.0
+lime>=0.2.0.1
+
+# NLP & Transformers
+sentence-transformers>=2.5.0
+transformers>=4.38.0
+torch>=2.2.0
+
+# Document Processing
+pypdf>=4.0.0
+python-docx>=1.1.0
+python-magic>=0.4.27
+email-reply-parser>=0.5.12
+bleach>=6.1.0
+
+# Privacy & Encryption
+pyfhel>=3.5.0
+cryptography>=42.0.7
+python-multipart>=0.0.9
+
+# OCR
+pillow>=10.3.0
+pytesseract>=0.3.10
+
+# Authentication & Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+slowapi>=0.1.9
+
+# Performance
+uvloop>=0.19.0; sys_platform != "win32"
+redis>=5.0.0
+
+# Monitoring & Observability
+prometheus-client>=0.20.0

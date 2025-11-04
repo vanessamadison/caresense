@@ -1,36 +1,85 @@
-import os
+"""Dataset ingestion utility with OCR + integrity checks."""
+
+from __future__ import annotations
+
 import csv
+import hashlib
+from argparse import ArgumentParser
+from pathlib import Path
+from typing import Iterable
+
 import pandas as pd
 from PIL import Image
 import pytesseract
 
-image_dir = "data/Symptom2Disease_dataset_train"
-label_csv = "data/Symptom2Disease_dataset_train.csv"
-output_csv = "data/extracted_symptoms_train.csv"
+DEFAULT_IMAGE_DIR = Path("data") / "Symptom2Disease_dataset_train"
+DEFAULT_LABELS = Path("data") / "Symptom2Disease_dataset_train.csv"
+DEFAULT_OUTPUT = Path("data") / "extracted_symptoms_train.csv"
 
-labels_df = pd.read_csv(label_csv, header=None, names=["file_name", "disease"])
-labels_dict = dict(zip(labels_df["file_name"], labels_df["disease"]))
 
-def extract_symptoms(image_path):
-    try:
-        text = pytesseract.image_to_string(Image.open(image_path))
-        if "Symptoms:" in text:
-            return text.split("Symptoms:")[-1].strip()
-        return text.strip()
-    except Exception as e:
-        print(f"Error reading {image_path}: {e}")
-        return ""
+def extract_symptom_text(image_path: Path, lang: str = "eng") -> str:
+    """Perform OCR on the provided image, returning cleaned symptom text."""
+    image = Image.open(image_path)
+    raw_text = pytesseract.image_to_string(image, lang=lang)
+    if "Symptoms:" in raw_text:
+        return raw_text.split("Symptoms:")[-1].strip()
+    return raw_text.strip()
 
-with open(output_csv, "w", newline="") as file:
-    writer = csv.writer(file)
-    writer.writerow(["symptom_text", "disease"])
-    
-    for filename in os.listdir(image_dir):
-        if filename.endswith(".png") or filename.endswith(".jpg"):
-            full_path = os.path.join(image_dir, filename)
-            extracted = extract_symptoms(full_path)
-            label = labels_dict.get(f"Symptom2Disease_dataset_train/{filename}", "Unknown")
-            if extracted and label != "Unknown":
-                writer.writerow([extracted, label])
 
-print(f"✅ Extracted data written to {output_csv}")
+def iter_labelled_images(image_dir: Path, labels: pd.DataFrame) -> Iterable[tuple[Path, str]]:
+    label_map = dict(zip(labels["file_name"], labels["disease"]))
+    for path in image_dir.glob("*"):
+        if path.suffix.lower() not in {".png", ".jpg", ".jpeg"}:
+            continue
+        key = f"{image_dir.name}/{path.name}"
+        disease = label_map.get(key)
+        if disease:
+            yield path, disease
+
+
+def main(
+    image_dir: Path = DEFAULT_IMAGE_DIR,
+    label_csv: Path = DEFAULT_LABELS,
+    output_csv: Path = DEFAULT_OUTPUT,
+    lang: str = "eng",
+) -> None:
+    labels_df = pd.read_csv(label_csv, header=None, names=["file_name", "disease"])
+
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    records = []
+
+    for path, disease in iter_labelled_images(image_dir, labels_df):
+        try:
+            text = extract_symptom_text(path, lang=lang)
+            if not text:
+                continue
+            record_id = hashlib.sha256(f"{path.name}:{disease}".encode("utf-8")).hexdigest()
+            records.append(
+                {
+                    "record_id": record_id,
+                    "symptom_text": text,
+                    "disease": disease,
+                }
+            )
+        except Exception as exc:  # pragma: no cover - logging side effect
+            print(f"[WARN] Failed OCR for {path}: {exc}")
+
+    if not records:
+        raise RuntimeError("No OCR records produced; verify dataset paths.")
+
+    with output_csv.open("w", newline="", encoding="utf-8") as fp:
+        writer = csv.DictWriter(fp, fieldnames=["record_id", "symptom_text", "disease"])
+        writer.writeheader()
+        writer.writerows(records)
+
+    print(f"✅ Extracted {len(records)} labelled samples -> {output_csv}")
+
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description="Extract symptom text from labelled medical reports.")
+    parser.add_argument("--image-dir", type=Path, default=DEFAULT_IMAGE_DIR)
+    parser.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--lang", type=str, default="eng", help="Tesseract language pack (e.g. eng, spa).")
+    args = parser.parse_args()
+    main(args.image_dir, args.labels, args.output, args.lang)

@@ -1,0 +1,25 @@
+services:
+  caresense:
+    build: .
+    image: caresense:0.2.0
+    ports:
+      - "8080:8080"
+    environment:
+      UVICORN_WORKERS: 4
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    restart: unless-stopped
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: caresense-frontend:0.2.0
+    environment:
+      VITE_API_BASE_URL: http://caresense:8080
+      VITE_APP_VERSION: v0.2.0
+    ports:
+      - "4173:4173"
+    depends_on:
+      - caresense
+    restart: unless-stopped

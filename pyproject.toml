@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "caresense"
+version = "0.2.0"
+description = "Privacy-preserving biometric triage platform"
+readme = "README.md"
+authors = [
+    { name = "Nessa Kodo", email = "nessa@caresense.app" }
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "UP", "PL", "RUF"]
+ignore = ["E203", "E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.coverage.report]
+omit = ["tests/*"]
