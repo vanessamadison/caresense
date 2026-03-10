@@ -137,13 +137,15 @@ class ReviewService:
         self._append_to_queue(case)
 
         # Audit log
-        self._compliance.log_event({
-            "event": "review_case_submitted",
-            "case_id": case_id,
-            "priority": priority.value,
-            "predicted_urgency": case.predicted_urgency,
-            "confidence": case.confidence,
-        })
+        self._compliance.log_event(
+            {
+                "event": "review_case_submitted",
+                "case_id": case_id,
+                "priority": priority.value,
+                "predicted_urgency": case.predicted_urgency,
+                "confidence": case.confidence,
+            }
+        )
 
         self._logger.info(
             "review_case_submitted",
@@ -187,7 +189,8 @@ class ReviewService:
 
             # Filter pending cases
             pending = [
-                c for c in cases
+                c
+                for c in cases
                 if c.status == ReviewStatus.PENDING or c.status == ReviewStatus.IN_REVIEW
             ]
 
@@ -203,9 +206,7 @@ class ReviewService:
                 ReviewPriority.LOW: 3,
             }
 
-            pending.sort(
-                key=lambda c: (priority_order.get(c.priority, 999), c.created_at)
-            )
+            pending.sort(key=lambda c: (priority_order.get(c.priority, 999), c.created_at))
 
             # Limit results
             pending = pending[:limit]
@@ -282,30 +283,40 @@ class ReviewService:
             case.reviewed_at = datetime.now(timezone.utc).isoformat()
             case.reviewer_id = clinician_id
             case.clinician_notes = notes[:1000] if notes else None  # Security: limit length
-            case.clinician_decision = override_urgency if override_urgency else case.predicted_urgency
+            case.clinician_decision = (
+                override_urgency if override_urgency else case.predicted_urgency
+            )
 
             if override_urgency and override_urgency != case.predicted_urgency:
-                case.override_reason = f"Clinician override from {case.predicted_urgency} to {override_urgency}"
+                case.override_reason = (
+                    f"Clinician override from {case.predicted_urgency} to {override_urgency}"
+                )
 
             # Add to audit trail
-            case.audit_trail.append({
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "action": "reviewed",
-                "clinician_id": clinician_id,
-                "decision": decision,
-            })
+            case.audit_trail.append(
+                {
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "action": "reviewed",
+                    "clinician_id": clinician_id,
+                    "decision": decision,
+                }
+            )
 
             # Save back to queue
             self._save_queue(cases)
 
             # Compliance log
-            signature = self._compliance.log_event({
-                "event": "clinician_review_submitted",
-                "case_id": case_id,
-                "clinician_id": clinician_id,
-                "decision": decision,
-                "override": override_urgency != case.predicted_urgency if override_urgency else False,
-            })
+            signature = self._compliance.log_event(
+                {
+                    "event": "clinician_review_submitted",
+                    "case_id": case_id,
+                    "clinician_id": clinician_id,
+                    "decision": decision,
+                    "override": override_urgency != case.predicted_urgency
+                    if override_urgency
+                    else False,
+                }
+            )
 
             self._logger.info(
                 "review_submitted",

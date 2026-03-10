@@ -128,7 +128,7 @@ class TransformerPredictor:
 
             # Truncate to max length (rough character limit)
             if len(text) > MAX_INPUT_LENGTH * 4:  # ~4 chars per token
-                text = text[:MAX_INPUT_LENGTH * 4]
+                text = text[: MAX_INPUT_LENGTH * 4]
 
             sanitized_texts.append(text)
 
@@ -194,7 +194,7 @@ class TransformerPredictor:
 
         if len(text) > MAX_INPUT_LENGTH * 4:
             self._logger.warning("input_truncated", original_length=len(text))
-            text = text[:MAX_INPUT_LENGTH * 4]
+            text = text[: MAX_INPUT_LENGTH * 4]
 
         # Hash for audit
         text_hash = hashlib.sha256(text.encode()).hexdigest()[:16]
@@ -207,6 +207,7 @@ class TransformerPredictor:
             classifier_path = self._settings.model_path.parent / "transformer_classifier.pkl"
             if classifier_path.exists() and self._classifier is None:
                 import joblib
+
                 self._classifier = joblib.load(classifier_path)
 
             if self._classifier is not None:
