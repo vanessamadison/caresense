@@ -1,6 +1,6 @@
 # 𝘊𝘢𝘳𝘦𝘚𝘦𝘯𝘴𝘦
 
-![Version](https://img.shields.io/badge/Version-v0.3.0-000000?style=for-the-badge&logo=github&logoColor=white)
+![Version](https://img.shields.io/badge/Version-v2.0.0-000000?style=for-the-badge&logo=github&logoColor=white)
 [![Python](https://img.shields.io/badge/Python_3.11+-000000?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-000000?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Homomorphic Encryption](https://img.shields.io/badge/Homomorphic_Encryption-Pyfhel-000000?style=for-the-badge)](https://github.com/ibarrond/Pyfhel)
@@ -36,6 +36,27 @@ The system is designed as a research grade reference implementation for future c
 
 - **Privacy and security by design**  
   Homomorphic encryption for biometric attestation, differential privacy ready training, rate limiting, security headers, and signed audit logs
+
+---
+
+## 𝘍𝘳𝘰𝘯𝘵𝘦𝘯𝘥 𝘷2
+
+The CareSense frontend has been completely redesigned in v2 to provide a sleek, modern, and highly responsive experience for both patients and healthcare providers. The updated interface focuses on clarity, accessibility, and real-time feedback.
+
+<p align="center">
+  <img src="assets/screenshots/web-patient.png" width="48%" alt="Patient Web View" />
+  <img src="assets/screenshots/web-provider.png" width="48%" alt="Provider Web View" />
+  <br />
+  <em>Figure 1: Sleek web interfaces for patient triage (left) and provider review dashboard (right).</em>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/mobile-patient.png" width="24%" alt="Patient Mobile View" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/mobile-provider.png" width="24%" alt="Provider Mobile View" />
+  <br />
+  <em>Figure 2: Mobile-optimized views ensuring clinical decision support is accessible on the go.</em>
+</p>
 
 ---
 
