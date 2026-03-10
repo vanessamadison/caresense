@@ -1,6 +1,7 @@
 # 𝘊𝘢𝘳𝘦𝘚𝘦𝘯𝘴𝘦
 
 ![Version](https://img.shields.io/badge/Version-v2.0.0-000000?style=for-the-badge&logo=github&logoColor=white)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-CareSense-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://caresense.vercel.app/)
 [![Python](https://img.shields.io/badge/Python_3.11+-000000?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-000000?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Homomorphic Encryption](https://img.shields.io/badge/Homomorphic_Encryption-Pyfhel-000000?style=for-the-badge)](https://github.com/ibarrond/Pyfhel)
@@ -57,6 +58,41 @@ The CareSense frontend has been completely redesigned in v2 to provide a sleek, 
   <br />
   <em>Figure 2: Mobile-optimized views ensuring clinical decision support is accessible on the go.</em>
 </p>
+
+### 𝘙𝘦𝘴𝘰𝘶𝘳𝘤𝘦 𝘖𝘱𝘵𝘪𝘮𝘪𝘻𝘢𝘵𝘪𝘰𝘯 & 𝘓𝘰𝘸 𝘜𝘳𝘨𝘦𝘯𝘤𝘺 𝘛𝘳𝘪𝘢𝘨𝘦
+
+CareSense is designed to identify low-urgency cases that do not require immediate clinical intervention, helping to preserve hospital and clinic resources for critical patients.
+
+<p align="center">
+  <img src="assets/screenshots/low-desktop-input.png" width="48%" alt="Low Urgency Input Desktop" />
+  <img src="assets/screenshots/low-desktop-metrics.png" width="48%" alt="Low Urgency Metrics Desktop" />
+  <br />
+  <em>Figure 3: Desktop workflow showing a low-urgency symptom entry and the resulting AI-driven metrics and recommendations.</em>
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/low-phone-input.png" width="30%" alt="Low Urgency Input Phone" />
+  &nbsp;
+  <img src="assets/screenshots/low-phone-metrics.png" width="30%" alt="Low Urgency Metrics Phone" />
+  &nbsp;
+  <img src="assets/screenshots/low-phone-result.png" width="30%" alt="Low Urgency Result Phone" />
+  <br />
+  <em>Figure 4: Mobile workflow for low-urgency triage, providing clear guidance to patients.</em>
+</p>
+
+---
+
+## 𝘋𝘦𝘤𝘪𝘴𝘪𝘰𝘯 𝘐𝘯𝘵𝘦𝘭𝘭𝘪𝘨𝘦𝘯𝘤𝘦 & 𝘊𝘭𝘪𝘯𝘪𝘤𝘢𝘭 𝘝𝘢𝘭𝘪𝘥𝘪𝘵𝘺
+
+### AI Prompting & Input
+CareSense processes unstructured natural language symptom descriptions provided by patients. The "prompt" to the system is the patient's self-reported symptoms (e.g., *"I have a mild headache and a slightly runny nose"*). The system uses a hybrid ML pipeline (TF-IDF + Logistic Regression and Sentence Transformers) to map these inputs to clinical urgency levels based on trained medical datasets.
+
+### Clinical Validity
+The platform is a **Clinical Decision Support (CDS)** tool and is not intended for independent diagnosis.
+- **Calibrated Probabilities**: Each prediction is accompanied by a confidence score calibrated using isotonic regression to ensure reliability.
+- **Explainability**: SHAP and LIME provide feature-level transparency, showing which symptoms most influenced the urgency score.
+- **Human-in-the-Loop**: High-urgency predictions are automatically queued for clinician review to ensure safety and accuracy.
+- **Validation**: The model is trained on a research-grade symptom-to-disease dataset and validated for balanced F1-scores across urgency levels.
 
 ---
 
