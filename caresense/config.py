@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
-from pydantic import HttpUrl, field_validator
+from pydantic import HttpUrl
 from pydantic_settings import BaseSettings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,11 +18,7 @@ class Settings(BaseSettings):
     environment: str = "local"
     api_title: str = "CareSense Secure Triage API"
     api_version: str = "0.2.0"
-    allow_origins: list[str] = [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "https://caresense.app",
-    ]
+    allow_origins: str = "http://localhost:3000,http://localhost:5173,https://caresense.app"
 
     audit_log_path: Path = BASE_DIR / "data" / "audit_logs.jsonl"
     encrypted_storage_dir: Path = BASE_DIR / "data" / "encrypted"
@@ -48,12 +44,8 @@ class Settings(BaseSettings):
         "case_sensitive": False,
     }
 
-    @field_validator("allow_origins", mode="before")
-    @classmethod
-    def _split_origins(cls, value: str | list[str]) -> list[str]:
-        if isinstance(value, str):
-            return [origin.strip() for origin in value.split(",") if origin.strip()]
-        return value
+    def cors_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.allow_origins.split(",") if origin.strip()]
 
 
 @lru_cache
