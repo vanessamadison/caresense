@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 from typing import Optional
 
@@ -74,7 +73,9 @@ def enrol_biometric(
     response_model=CompliancePublicKeyResponse,
     tags=["Compliance"],
 )
-def compliance_public_key(trail: ComplianceTrail = Depends(get_compliance_dependency)) -> CompliancePublicKeyResponse:
+def compliance_public_key(
+    trail: ComplianceTrail = Depends(get_compliance_dependency),
+) -> CompliancePublicKeyResponse:
     pem = trail.public_key_pem().decode("utf-8")
     return CompliancePublicKeyResponse(public_key_pem=pem)
 
@@ -88,7 +89,9 @@ def run_triage(
     request: TriageRequest,
     triage_service: TriageService = Depends(get_triage_dependency),
     biometric_service: BiometricAuthService = Depends(get_biometric_dependency),
+    review_service=Depends(lambda: get_review_service()),
 ) -> TriageResponse:
+    biometric_verified = False
     biometric_reference = request.biometric_token
     if request.biometric_vector:
         if not request.biometric_token:
@@ -102,9 +105,26 @@ def run_triage(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Biometric verification failed.",
             )
+        biometric_verified = True
 
     result = triage_service.run_triage(request.symptoms, biometric_reference)
     enrichment = result.enrichment
+    review_case_id = None
+
+    if result.review_recommended:
+        review_case_id = review_service.submit_for_review(
+            triage_result={
+                "urgency": result.urgency,
+                "confidence": result.confidence,
+                "recommended_care": enrichment["care_type"],
+                "specialty": enrichment["specialty"],
+                "next_steps": enrichment["next_steps"],
+                "confidence_band": result.confidence_band,
+                "summary": result.summary,
+                "generated_at": result.generated_at,
+            },
+            symptoms_hash=result.symptoms_hash,
+        )
 
     return TriageResponse(
         urgency=result.urgency,
@@ -112,6 +132,15 @@ def run_triage(
         recommended_care=enrichment["care_type"],
         specialty=enrichment["specialty"],
         next_steps=enrichment["next_steps"],
+        confidence_band=result.confidence_band,
+        care_window=enrichment["care_window"],
+        summary=result.summary,
+        generated_at=result.generated_at,
+        biometric_verified=biometric_verified,
+        review_recommended=result.review_recommended,
+        review_case_id=review_case_id,
+        probability_breakdown=result.probability_breakdown,
+        model_version=result.model_version,
         audit_reference=result.audit_reference,
     )
 
@@ -300,6 +329,7 @@ async def upload_document(
 def triage_document(
     request: DocumentTriageRequest,
     triage_service: TriageService = Depends(get_triage_dependency),
+    review_service=Depends(lambda: get_review_service()),
 ) -> TriageResponse:
     """
     Run triage on text extracted from document.
@@ -323,6 +353,22 @@ def triage_document(
         # Run triage
         result = triage_service.run_triage(text, request.biometric_token)
         enrichment = result.enrichment
+        review_case_id = None
+
+        if result.review_recommended:
+            review_case_id = review_service.submit_for_review(
+                triage_result={
+                    "urgency": result.urgency,
+                    "confidence": result.confidence,
+                    "recommended_care": enrichment["care_type"],
+                    "specialty": enrichment["specialty"],
+                    "next_steps": enrichment["next_steps"],
+                    "confidence_band": result.confidence_band,
+                    "summary": result.summary,
+                    "generated_at": result.generated_at,
+                },
+                symptoms_hash=result.symptoms_hash,
+            )
 
         return TriageResponse(
             urgency=result.urgency,
@@ -330,6 +376,15 @@ def triage_document(
             recommended_care=enrichment["care_type"],
             specialty=enrichment["specialty"],
             next_steps=enrichment["next_steps"],
+            confidence_band=result.confidence_band,
+            care_window=enrichment["care_window"],
+            summary=result.summary,
+            generated_at=result.generated_at,
+            biometric_verified=False,
+            review_recommended=result.review_recommended,
+            review_case_id=review_case_id,
+            probability_breakdown=result.probability_breakdown,
+            model_version=result.model_version,
             audit_reference=result.audit_reference,
         )
 
@@ -458,12 +513,14 @@ def submit_review(
         )
 
         # Generate compliance signature
-        signature = compliance.log_event({
-            "event": "clinician_review",
-            "case_id": request.case_id,
-            "clinician_id": request.clinician_id,
-            "decision": request.decision,
-        })
+        signature = compliance.log_event(
+            {
+                "event": "clinician_review",
+                "case_id": request.case_id,
+                "clinician_id": request.clinician_id,
+                "decision": request.decision,
+            }
+        )
 
         return SubmitReviewResponse(
             success=success,

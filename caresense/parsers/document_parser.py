@@ -251,7 +251,9 @@ class DocumentParser:
                 )
 
             # Extract text from paragraphs
-            text_parts = [para.text for para in doc.paragraphs[:MAX_DOCX_PARAGRAPHS] if para.text.strip()]
+            text_parts = [
+                para.text for para in doc.paragraphs[:MAX_DOCX_PARAGRAPHS] if para.text.strip()
+            ]
 
             text = "\n\n".join(text_parts)
 

@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+frontend/node_modules/
+frontend/dist/
+frontend/package-lock.json
+data/queues/
+data/audit_logs.jsonl
+data/audit_logs.ed25519

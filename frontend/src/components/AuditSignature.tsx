@@ -13,13 +13,20 @@ export function AuditSignature({ signature }: Props) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-700 bg-slate-900/80 p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-            Audit Reference
+    <section className="surface-panel">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="max-w-2xl">
+          <span className="eyebrow">Compliance</span>
+          <h3 className="mt-3 text-xl font-semibold text-[color:var(--ink-strong)]">
+            Signed audit reference captured for this care event.
           </h3>
-          <p className="mt-1 break-words font-mono text-xs text-slate-100/90">{signature}</p>
+          <p className="mt-3 break-all rounded-2xl border border-white/60 bg-white/70 px-4 py-3 font-mono text-xs leading-6 text-[color:var(--ink-strong)]">
+            {signature}
+          </p>
+          <p className="mt-3 text-sm text-[color:var(--ink-soft)]">
+            This signature can be validated against the platform public key to confirm the triage
+            event was written to the compliance ledger without tampering.
+          </p>
         </div>
         <button
           type="button"
@@ -28,15 +35,12 @@ export function AuditSignature({ signature }: Props) {
             setCopied(true);
             setTimeout(() => setCopied(false), 2200);
           }}
-          className="inline-flex items-center gap-2 rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-50 transition hover:border-slate-400 hover:text-white"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--line-strong)] bg-white/80 px-4 py-2 text-sm font-medium text-[color:var(--ink-strong)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
         >
           <ClipboardDocumentListIcon className="h-4 w-4" />
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? 'Copied' : 'Copy reference'}
         </button>
       </div>
-      <p className="mt-3 text-xs text-slate-400">
-        Use this Ed25519 signature to verify the triage ledger entry via the compliance API.
-      </p>
-    </div>
+    </section>
   );
 }

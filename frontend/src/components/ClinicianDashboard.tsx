@@ -1,339 +1,234 @@
-/**
- * Clinician Review Dashboard Component
- *
- * Security features:
- * - Requires clinician authentication
- * - No PHI displayed (uses hashes)
- * - Audit trail visible
- * - Input sanitization
- */
+import clsx from 'clsx';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
-interface ReviewCase {
-  case_id: string;
-  predicted_urgency: string;
-  confidence: number;
-  status: string;
-  priority: string;
-  created_at: string;
-  explanation?: {
-    top_features: Array<{ feature: string; importance: number }>;
-    explanation_method: string;
-  };
-}
+import { fetchPendingCases, submitReview, type ReviewCase } from '../lib/api';
 
 interface Props {
   clinicianId: string;
 }
 
+const priorityTone: Record<string, string> = {
+  critical: 'text-rose-700 bg-rose-100 border-rose-200',
+  high: 'text-orange-700 bg-orange-100 border-orange-200',
+  medium: 'text-amber-700 bg-amber-100 border-amber-200',
+  low: 'text-emerald-700 bg-emerald-100 border-emerald-200'
+};
+
 export function ClinicianDashboard({ clinicianId }: Props) {
-  const [selectedCase, setSelectedCase] = useState<ReviewCase | null>(null);
-  const [decision, setDecision] = useState('');
-  const [notes, setNotes] = useState('');
-  const [overrideUrgency, setOverrideUrgency] = useState('');
-
   const queryClient = useQueryClient();
+  const [selectedCase, setSelectedCase] = useState<ReviewCase | null>(null);
+  const [decision, setDecision] = useState<'approved' | 'rejected' | 'escalated' | 'in_review'>(
+    'approved'
+  );
+  const [overrideUrgency, setOverrideUrgency] = useState<string>('');
+  const [notes, setNotes] = useState('');
 
-  // Fetch pending cases
-  const { data: casesData, isLoading } = useQuery({
+  const reviewQuery = useQuery({
     queryKey: ['pending-cases', clinicianId],
-    queryFn: async () => {
-      const response = await fetch(
-        `/v1/review/pending?clinician_id=${encodeURIComponent(clinicianId)}`,
-        {
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch pending cases');
-      }
-
-      return response.json();
-    },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryFn: () => fetchPendingCases(clinicianId),
+    refetchInterval: 30000
   });
 
-  // Submit review mutation
-  const submitReview = useMutation({
-    mutationFn: async (reviewData: any) => {
-      const response = await fetch('/v1/review/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reviewData),
-      });
+  useEffect(() => {
+    if (!selectedCase && reviewQuery.data?.cases.length) {
+      setSelectedCase(reviewQuery.data.cases[0]);
+    }
+  }, [reviewQuery.data?.cases, selectedCase]);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Failed to submit review');
-      }
-
-      return response.json();
-    },
-    onSuccess: () => {
-      // Refresh cases list
-      queryClient.invalidateQueries({ queryKey: ['pending-cases'] });
-      // Reset form
+  const submitMutation = useMutation({
+    mutationFn: submitReview,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['pending-cases', clinicianId] });
       setSelectedCase(null);
-      setDecision('');
       setNotes('');
       setOverrideUrgency('');
-    },
+      setDecision('approved');
+    }
   });
 
-  const handleSubmitReview = () => {
-    if (!selectedCase || !decision) {
-      return;
-    }
-
-    submitReview.mutate({
-      case_id: selectedCase.case_id,
-      clinician_id: clinicianId,
-      decision,
-      notes: notes.trim() || null,
-      override_urgency: overrideUrgency || null,
-    });
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'critical':
-        return 'bg-red-900 text-red-100';
-      case 'high':
-        return 'bg-orange-900 text-orange-100';
-      case 'medium':
-        return 'bg-yellow-900 text-yellow-100';
-      case 'low':
-        return 'bg-green-900 text-green-100';
-      default:
-        return 'bg-gray-800 text-gray-100';
-    }
-  };
-
-  const getUrgencyColor = (urgency: string) => {
-    if (urgency.includes('High')) return 'text-red-400';
-    if (urgency.includes('Medium')) return 'text-yellow-400';
-    return 'text-green-400';
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  const cases = casesData?.cases || [];
+  const cases = reviewQuery.data?.cases ?? [];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-gray-950 text-gray-100">
-      {/* Cases List */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Pending Reviews</h2>
-          <span className="text-sm text-gray-400">{cases.length} cases</span>
+    <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="surface-panel">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <span className="eyebrow">Clinician review</span>
+            <h2 className="mt-3 text-2xl font-semibold text-[color:var(--ink-strong)]">
+              Live queue for human oversight.
+            </h2>
+          </div>
+          <div className="rounded-full border border-white/60 bg-white/70 px-4 py-2 text-sm text-[color:var(--ink-soft)]">
+            {reviewQuery.isLoading ? 'Loading' : `${cases.length} active`}
+          </div>
         </div>
 
-        <div className="space-y-3 max-h-[800px] overflow-y-auto">
-          {cases.map((case_: ReviewCase) => (
-            <div
-              key={case_.case_id}
-              onClick={() => setSelectedCase(case_)}
-              className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                selectedCase?.case_id === case_.case_id
-                  ? 'border-blue-500 bg-gray-800'
-                  : 'border-gray-700 bg-gray-900 hover:border-gray-600'
-              }`}
+        <div className="mt-6 space-y-3">
+          {cases.map((caseItem) => (
+            <button
+              key={caseItem.case_id}
+              type="button"
+              onClick={() => setSelectedCase(caseItem)}
+              className={clsx(
+                'w-full rounded-[24px] border p-4 text-left transition',
+                selectedCase?.case_id === caseItem.case_id
+                  ? 'border-[color:var(--accent)] bg-[color:var(--surface-strong)] shadow-[0_24px_50px_rgba(15,23,42,0.08)]'
+                  : 'border-white/60 bg-white/70 hover:border-[color:var(--line-strong)]'
+              )}
             >
-              <div className="flex justify-between items-start mb-2">
-                <span
-                  className={`px-2 py-1 rounded text-xs font-bold uppercase ${getPriorityColor(
-                    case_.priority
-                  )}`}
-                >
-                  {case_.priority}
-                </span>
-                <span className="text-xs text-gray-500">
-                  {new Date(case_.created_at).toLocaleString()}
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div
+                    className={clsx(
+                      'inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em]',
+                      priorityTone[caseItem.priority] ?? 'text-slate-700 bg-slate-100 border-slate-200'
+                    )}
+                  >
+                    {caseItem.priority}
+                  </div>
+                  <p className="mt-3 text-lg font-semibold text-[color:var(--ink-strong)]">
+                    {caseItem.predicted_urgency}
+                  </p>
+                </div>
+                <span className="text-xs text-[color:var(--ink-muted)]">
+                  {new Date(caseItem.created_at).toLocaleString()}
                 </span>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-400">Predicted:</span>
-                  <span className={`font-semibold ${getUrgencyColor(case_.predicted_urgency)}`}>
-                    {case_.predicted_urgency}
-                  </span>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[color:var(--ink-muted)]">
+                    Confidence
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-[color:var(--ink-strong)]">
+                    {(caseItem.confidence * 100).toFixed(1)}%
+                  </p>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-400">Confidence:</span>
-                  <span className="font-mono text-sm">
-                    {(case_.confidence * 100).toFixed(1)}%
-                  </span>
+                <div className="min-w-[120px]">
+                  <div className="h-2 overflow-hidden rounded-full bg-[color:var(--line-soft)]">
+                    <div
+                      className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent),var(--accent-soft))]"
+                      style={{ width: `${Math.max(caseItem.confidence * 100, 4)}%` }}
+                    />
+                  </div>
                 </div>
-
-                <div className="text-xs text-gray-500">Case: {case_.case_id.slice(0, 8)}</div>
               </div>
-            </div>
+            </button>
           ))}
 
-          {cases.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <p>No pending cases</p>
+          {!reviewQuery.isLoading && cases.length === 0 && (
+            <div className="rounded-[24px] border border-dashed border-[color:var(--line-strong)] bg-white/50 p-8 text-center text-sm text-[color:var(--ink-soft)]">
+              No pending review cases. High-urgency or low-confidence assessments will appear here
+              automatically.
             </div>
           )}
         </div>
       </div>
 
-      {/* Case Details & Review Form */}
-      <div className="space-y-4">
+      <div className="surface-panel">
         {selectedCase ? (
-          <div className="space-y-6">
-            <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-xl font-bold mb-4">Case Details</h3>
+          <>
+            <span className="eyebrow">Decisioning</span>
+            <h3 className="mt-3 text-2xl font-semibold text-[color:var(--ink-strong)]">
+              {selectedCase.predicted_urgency}
+            </h3>
+            <p className="mt-2 text-sm text-[color:var(--ink-soft)]">
+              Case {selectedCase.case_id} created {new Date(selectedCase.created_at).toLocaleString()}
+            </p>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-400">Case ID</label>
-                  <p className="font-mono text-sm">{selectedCase.case_id}</p>
-                </div>
-
-                <div>
-                  <label className="text-sm text-gray-400">AI Prediction</label>
-                  <p className={`font-semibold ${getUrgencyColor(selectedCase.predicted_urgency)}`}>
-                    {selectedCase.predicted_urgency}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="text-sm text-gray-400">Confidence</label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 bg-gray-800 rounded-full h-2">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full"
-                        style={{ width: `${selectedCase.confidence * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="font-mono text-sm">
-                      {(selectedCase.confidence * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-
-                {/* Explanation */}
-                {selectedCase.explanation && (
-                  <div className="mt-6">
-                    <label className="text-sm text-gray-400 mb-2 block">
-                      Key Features (via {selectedCase.explanation.explanation_method})
-                    </label>
-                    <div className="space-y-2">
-                      {selectedCase.explanation.top_features.slice(0, 5).map((feature, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="text-xs bg-gray-800 px-2 py-1 rounded">
-                            {feature.feature}
-                          </span>
-                          <div className="flex-1 bg-gray-800 rounded-full h-1.5">
-                            <div
-                              className={`h-1.5 rounded-full ${
-                                feature.importance > 0 ? 'bg-green-500' : 'bg-red-500'
-                              }`}
-                              style={{
-                                width: `${Math.abs(feature.importance) * 100}%`,
-                              }}
-                            ></div>
-                          </div>
-                          <span className="text-xs font-mono text-gray-500">
-                            {feature.importance.toFixed(3)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="metric-tile">
+                <span className="metric-label">Status</span>
+                <span className="metric-value text-base capitalize">{selectedCase.status}</span>
+              </div>
+              <div className="metric-tile">
+                <span className="metric-label">Priority</span>
+                <span className="metric-value text-base capitalize">{selectedCase.priority}</span>
               </div>
             </div>
 
-            {/* Review Form */}
-            <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-xl font-bold mb-4">Submit Review</h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Decision *</label>
-                  <select
-                    value={decision}
-                    onChange={(e) => setDecision(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  >
-                    <option value="">Select decision...</option>
-                    <option value="approved">Approve</option>
-                    <option value="rejected">Reject</option>
-                    <option value="escalated">Escalate</option>
-                    <option value="in_review">Mark In Review</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Override Urgency</label>
-                  <select
-                    value={overrideUrgency}
-                    onChange={(e) => setOverrideUrgency(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  >
-                    <option value="">Keep AI prediction</option>
-                    <option value="Low Urgency">Low Urgency</option>
-                    <option value="Medium Urgency">Medium Urgency</option>
-                    <option value="High Urgency">High Urgency</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Clinical Notes (optional)
-                  </label>
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    maxLength={1000}
-                    rows={4}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                    placeholder="Enter your clinical notes here..."
-                  />
-                  <div className="text-xs text-gray-500 mt-1">
-                    {notes.length}/1000 characters
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleSubmitReview}
-                  disabled={!decision || submitReview.isPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 rounded transition-colors"
+            <div className="mt-6 space-y-4">
+              <label className="field-group">
+                <span className="field-label">Decision</span>
+                <select
+                  value={decision}
+                  onChange={(event) =>
+                    setDecision(
+                      event.target.value as 'approved' | 'rejected' | 'escalated' | 'in_review'
+                    )
+                  }
+                  className="input-shell"
                 >
-                  {submitReview.isPending ? 'Submitting...' : 'Submit Review'}
-                </button>
+                  <option value="approved">Approve</option>
+                  <option value="escalated">Escalate</option>
+                  <option value="in_review">Mark in review</option>
+                  <option value="rejected">Reject</option>
+                </select>
+              </label>
 
-                {submitReview.isError && (
-                  <div className="text-red-400 text-sm">
-                    Error: {(submitReview.error as Error).message}
-                  </div>
-                )}
+              <label className="field-group">
+                <span className="field-label">Override urgency</span>
+                <select
+                  value={overrideUrgency}
+                  onChange={(event) => setOverrideUrgency(event.target.value)}
+                  className="input-shell"
+                >
+                  <option value="">Keep model urgency</option>
+                  <option value="Low Urgency">Low Urgency</option>
+                  <option value="Medium Urgency">Medium Urgency</option>
+                  <option value="High Urgency">High Urgency</option>
+                </select>
+              </label>
 
-                {submitReview.isSuccess && (
-                  <div className="text-green-400 text-sm">Review submitted successfully!</div>
-                )}
-              </div>
+              <label className="field-group">
+                <span className="field-label">Clinical note</span>
+                <textarea
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  className="input-shell min-h-32 resize-y"
+                  placeholder="Capture the reasoning for approval, escalation, or override."
+                />
+              </label>
+
+              {submitMutation.error && (
+                <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {(submitMutation.error as Error).message}
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={() =>
+                  submitMutation.mutate({
+                    case_id: selectedCase.case_id,
+                    clinician_id: clinicianId,
+                    decision,
+                    notes: notes.trim() || null,
+                    override_urgency:
+                      (overrideUrgency as 'Low Urgency' | 'Medium Urgency' | 'High Urgency' | '') ||
+                      null
+                  })
+                }
+                disabled={submitMutation.isPending}
+                className="primary-button w-full"
+              >
+                {submitMutation.isPending ? 'Submitting decision...' : 'Submit clinician review'}
+              </button>
             </div>
-          </div>
+          </>
         ) : (
-          <div className="bg-gray-900 border border-gray-700 rounded-lg p-12 text-center text-gray-500">
-            <p>Select a case to review</p>
-          </div>
+          <>
+            <span className="eyebrow">Decisioning</span>
+            <h3 className="mt-3 text-2xl font-semibold text-[color:var(--ink-strong)]">
+              Select a case to review.
+            </h3>
+            <p className="mt-3 text-sm leading-6 text-[color:var(--ink-soft)]">
+              The queue prioritizes high-risk and low-confidence assessments. Choosing a case reveals
+              decision controls for approval, escalation, or urgency override.
+            </p>
+          </>
         )}
       </div>
-    </div>
+    </section>
   );
 }

@@ -38,6 +38,15 @@ class TriageResponse(BaseModel):
     recommended_care: str
     specialty: str
     next_steps: str
+    confidence_band: str
+    care_window: str
+    summary: str
+    generated_at: str
+    biometric_verified: bool = False
+    review_recommended: bool = False
+    review_case_id: str | None = None
+    probability_breakdown: dict[str, float] = Field(default_factory=dict)
+    model_version: str
     audit_reference: str | None = None
 
 

@@ -147,7 +147,9 @@ class SHAPExplainer:
 
             # For the predicted class, get SHAP values
             predicted_class = np.argmax(shap_values[0]) if isinstance(shap_values, list) else 0
-            class_shap_values = shap_values[predicted_class] if isinstance(shap_values, list) else shap_values
+            class_shap_values = (
+                shap_values[predicted_class] if isinstance(shap_values, list) else shap_values
+            )
 
             # Compute feature importance: SVD component * SHAP value
             feature_importance = np.zeros(len(feature_names))
@@ -163,21 +165,25 @@ class SHAPExplainer:
                 if text_features[idx] > 0:  # Only include features present in input
                     feature_name = str(feature_names[idx])[:FEATURE_TRUNCATE_LENGTH]
                     # Remove special characters that might cause issues
-                    feature_name = "".join(c for c in feature_name if c.isalnum() or c in [" ", "_", "-"])
+                    feature_name = "".join(
+                        c for c in feature_name if c.isalnum() or c in [" ", "_", "-"]
+                    )
                     importance = float(feature_importance[idx])
-                    top_features.append({
-                        "feature": feature_name,
-                        "importance": round(importance, 6),
-                    })
+                    top_features.append(
+                        {
+                            "feature": feature_name,
+                            "importance": round(importance, 6),
+                        }
+                    )
 
             # Limit to top 10 for response size
             top_features = top_features[:10]
 
             result = {
                 "top_features": top_features,
-                "base_value": float(self._explainer.expected_value[predicted_class]) if isinstance(
-                    self._explainer.expected_value, (list, np.ndarray)
-                ) else float(self._explainer.expected_value),
+                "base_value": float(self._explainer.expected_value[predicted_class])
+                if isinstance(self._explainer.expected_value, (list, np.ndarray))
+                else float(self._explainer.expected_value),
                 "predicted_class": int(predicted_class),
                 "request_hash": request_hash,
                 "explanation_method": "shap_kernel",
@@ -223,10 +229,12 @@ class SHAPExplainer:
 
                     global_importance = []
                     for i in range(min(n_components, MAX_FEATURES_TO_EXPLAIN)):
-                        global_importance.append({
-                            "component": f"svd_component_{i}",
-                            "importance": float(abs(coef[i])),
-                        })
+                        global_importance.append(
+                            {
+                                "component": f"svd_component_{i}",
+                                "importance": float(abs(coef[i])),
+                            }
+                        )
 
                     global_importance.sort(key=lambda x: x["importance"], reverse=True)
 

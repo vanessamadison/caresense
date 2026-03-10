@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: caresense-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: false
+    healthCheckPath: /v1/health
+    envVars:
+      - key: CARESENSE_ALLOW_ORIGINS
+        value: http://localhost:5173,https://your-frontend-domain.vercel.app

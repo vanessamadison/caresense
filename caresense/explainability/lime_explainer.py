@@ -114,10 +114,12 @@ class LIMEExplainer:
                 sanitized_word = "".join(
                     c for c in str(word)[:50] if c.isalnum() or c in [" ", "_", "-"]
                 )
-                top_features.append({
-                    "word": sanitized_word,
-                    "importance": round(float(weight), 6),
-                })
+                top_features.append(
+                    {
+                        "word": sanitized_word,
+                        "importance": round(float(weight), 6),
+                    }
+                )
 
             result = {
                 "top_features": top_features,
@@ -127,7 +129,9 @@ class LIMEExplainer:
                     "High Urgency": round(float(probs[2]), 4),
                 },
                 "predicted_class": predicted_class,
-                "predicted_class_name": ["Low Urgency", "Medium Urgency", "High Urgency"][predicted_class],
+                "predicted_class_name": ["Low Urgency", "Medium Urgency", "High Urgency"][
+                    predicted_class
+                ],
                 "request_hash": request_hash,
                 "explanation_method": "lime_text",
             }
