@@ -105,6 +105,11 @@ body {
     @apply min-w-fit rounded-full px-4 py-3 text-sm font-medium text-[color:var(--ink-soft)] transition;
   }
 
+  .tab-label-compact,
+  .status-label-compact {
+    display: none;
+  }
+
   .tab-button-active {
     @apply bg-[color:var(--ink-strong)] text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)];
   }
@@ -174,8 +179,9 @@ body {
     padding: 0.35rem 0.45rem;
     font-size: 0.7rem;
     line-height: 1.1;
-    white-space: nowrap;
     text-align: center;
+    min-width: 0;
+    width: 100%;
   }
 
   .tab-shell {
@@ -190,9 +196,17 @@ body {
     min-width: 0;
     padding: 0.5rem 0.35rem;
     font-size: 0.72rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     text-align: center;
+    width: 100%;
+  }
+
+  .tab-label-full,
+  .status-label-full {
+    display: none;
+  }
+
+  .tab-label-compact,
+  .status-label-compact {
+    display: inline;
   }
 }

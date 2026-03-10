@@ -1,0 +1,3 @@
+# Optional dependencies for transformer embeddings
+sentence-transformers>=2.5.0
+torch>=2.2.0

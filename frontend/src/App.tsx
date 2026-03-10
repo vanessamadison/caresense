@@ -28,10 +28,10 @@ import {
 
 type ExperienceMode = 'intake' | 'review' | 'trust';
 
-const experienceTabs: Array<{ id: ExperienceMode; label: string }> = [
-  { id: 'intake', label: 'Patient intake' },
-  { id: 'review', label: 'Clinician review' },
-  { id: 'trust', label: 'Trust & compliance' }
+const experienceTabs: Array<{ id: ExperienceMode; label: string; compactLabel: string }> = [
+  { id: 'intake', label: 'Patient intake', compactLabel: 'Patient' },
+  { id: 'review', label: 'Clinician review', compactLabel: 'Provider' },
+  { id: 'trust', label: 'Trust & compliance', compactLabel: 'Trust' }
 ];
 
 const trustSignals = [
@@ -141,7 +141,9 @@ export default function App() {
     ? complianceKeyQuery.data.public_key_pem.split('\n').slice(0, 3).join('\n')
     : '';
   const verificationLabel = token?.token_id ? 'Verification ready' : 'Verification available';
+  const verificationCompactLabel = token?.token_id ? 'Verified' : 'Verify';
   const routingLabel = triageResult?.review_recommended ? 'Clinician review queued' : 'Direct care guidance';
+  const routingCompactLabel = triageResult?.review_recommended ? 'Queued' : 'Guidance';
 
   return (
     <div className="app-shell">
@@ -159,8 +161,14 @@ export default function App() {
             <span className={clsx('status-chip', serviceStatus === 'Online' ? 'status-chip-good' : serviceStatus === 'Checking' ? 'status-chip-neutral' : 'status-chip-alert')}>
               {serviceStatus}
             </span>
-            <span className="status-chip status-chip-neutral">{verificationLabel}</span>
-            <span className="status-chip status-chip-strong">{routingLabel}</span>
+            <span className="status-chip status-chip-neutral">
+              <span className="status-label-full">{verificationLabel}</span>
+              <span className="status-label-compact">{verificationCompactLabel}</span>
+            </span>
+            <span className="status-chip status-chip-strong">
+              <span className="status-label-full">{routingLabel}</span>
+              <span className="status-label-compact">{routingCompactLabel}</span>
+            </span>
           </div>
         </header>
 
@@ -172,7 +180,8 @@ export default function App() {
               onClick={() => setExperience(tab.id)}
               className={clsx('tab-button', experience === tab.id && 'tab-button-active')}
             >
-              {tab.label}
+              <span className="tab-label-full">{tab.label}</span>
+              <span className="tab-label-compact">{tab.compactLabel}</span>
             </button>
           ))}
         </nav>

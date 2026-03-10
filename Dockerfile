@@ -26,5 +26,5 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 EXPOSE 8080
-ENV UVICORN_WORKERS=4
+ENV UVICORN_WORKERS=1
 CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8080}"]
