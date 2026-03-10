@@ -7,7 +7,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
-from pydantic import HttpUrl
 from pydantic_settings import BaseSettings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +36,7 @@ class Settings(BaseSettings):
     post_quantum_kem: str = "kyber768"
     audit_signing_algorithm: str = "ed25519"
 
-    security_contact: Optional[HttpUrl] = "mailto:security@caresense.app"  # type: ignore[assignment]
+    security_contact: Optional[str] = "mailto:security@caresense.app"
 
     model_config = {
         "env_prefix": "CARESENSE_",
