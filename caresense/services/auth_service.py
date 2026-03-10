@@ -5,12 +5,21 @@ from __future__ import annotations
 import base64
 import os
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any
 
 from functools import lru_cache
 
-from pyfhel import PyCtxt  # type: ignore[import-untyped]
+try:
+    from pyfhel import PyCtxt  # type: ignore[import-untyped]
+except Exception:  # pragma: no cover - optional dependency
+    PyCtxt = Any  # type: ignore[assignment]
+    _PYFHEL_AVAILABLE = False
+else:
+    _PYFHEL_AVAILABLE = True
 
+from fastapi import HTTPException, status
+
+from caresense.config import get_settings
 from caresense.crypto.fhe import get_fhe
 from caresense.crypto.secure_store import get_store
 from caresense.utils.logging import get_logger
@@ -67,6 +76,25 @@ class BiometricAuthService:
         return distance <= tolerance
 
 
+class DisabledBiometricAuthService:
+    """Fallback when FHE is disabled or unavailable."""
+
+    def _raise_unavailable(self) -> None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Biometric verification is disabled on this deployment.",
+        )
+
+    def enrol(self, biometric_vector: list[float]) -> BiometricToken:  # noqa: ARG002
+        self._raise_unavailable()
+
+    def verify(self, token_id: str, presented_vector: list[float], tolerance: float = 0.1) -> bool:  # noqa: ARG002,E501
+        self._raise_unavailable()
+
+
 @lru_cache
-def get_biometric_service() -> BiometricAuthService:
+def get_biometric_service() -> BiometricAuthService | DisabledBiometricAuthService:
+    settings = get_settings()
+    if not settings.enable_fhe or not _PYFHEL_AVAILABLE:
+        return DisabledBiometricAuthService()
     return BiometricAuthService()

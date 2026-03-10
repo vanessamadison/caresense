@@ -161,3 +161,38 @@ body {
     @apply flex cursor-pointer flex-col items-center gap-2 rounded-[28px] border border-dashed border-[color:var(--line-strong)] bg-white/60 px-5 py-8 text-center text-[color:var(--ink-soft)] transition hover:border-[color:var(--accent)] hover:bg-white/75;
   }
 }
+
+@media (max-width: 640px) {
+  .brand-status {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .status-chip {
+    padding: 0.35rem 0.45rem;
+    font-size: 0.7rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .tab-shell {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    overflow-x: hidden;
+    padding: 0.4rem;
+  }
+
+  .tab-button {
+    min-width: 0;
+    padding: 0.5rem 0.35rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+}

@@ -9,3 +9,5 @@ services:
     envVars:
       - key: CARESENSE_ALLOW_ORIGINS
         value: http://localhost:5173,https://your-frontend-domain.vercel.app
+      - key: CARESENSE_ENABLE_FHE
+        value: "false"
