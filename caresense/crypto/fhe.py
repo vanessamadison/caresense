@@ -2,7 +2,16 @@
 
 from __future__ import annotations
 
-from pyfhel import PyCtxt, Pyfhel  # type: ignore[import-untyped]
+from typing import Any
+
+try:
+    from pyfhel import PyCtxt, Pyfhel  # type: ignore[import-untyped]
+except Exception:  # pragma: no cover - optional dependency
+    PyCtxt = Any  # type: ignore[assignment]
+    Pyfhel = Any  # type: ignore[assignment]
+    _PYFHEL_AVAILABLE = False
+else:
+    _PYFHEL_AVAILABLE = True
 
 from caresense.config import get_settings
 from caresense.utils.logging import get_logger
@@ -74,9 +83,10 @@ class FHEContext:
         return self.decrypt_vector(ciphertext)[0]
 
 
-_FHE_CONTEXT = FHEContext()
-
-
 def get_fhe() -> FHEContext:
     """Return shared FHE context."""
-    return _FHE_CONTEXT
+    if not _PYFHEL_AVAILABLE:
+        raise RuntimeError("Pyfhel is not installed. Install requirements-fhe.txt to enable FHE.")
+    if not hasattr(get_fhe, "_instance"):
+        setattr(get_fhe, "_instance", FHEContext())
+    return getattr(get_fhe, "_instance")

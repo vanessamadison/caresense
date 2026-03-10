@@ -1,0 +1,2 @@
+# Optional dependencies for homomorphic encryption (Pyfhel)
+pyfhel>=3.5.0

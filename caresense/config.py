@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     biometric_fhe_context: Path = BASE_DIR / "data" / "crypto" / "fhe_context.bin"
     biometric_fhe_secret: Path = BASE_DIR / "data" / "crypto" / "fhe_secret.bin"
+    enable_fhe: bool = False
 
     workflow_queue_dir: Path = BASE_DIR / "data" / "queues"
 
