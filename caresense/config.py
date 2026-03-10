@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
@@ -18,7 +19,6 @@ class Settings(BaseSettings):
     environment: str = "local"
     api_title: str = "CareSense Secure Triage API"
     api_version: str = "0.2.0"
-    allow_origins: str = "http://localhost:3000,http://localhost:5173,https://caresense.app"
 
     audit_log_path: Path = BASE_DIR / "data" / "audit_logs.jsonl"
     encrypted_storage_dir: Path = BASE_DIR / "data" / "encrypted"
@@ -45,7 +45,11 @@ class Settings(BaseSettings):
     }
 
     def cors_origins(self) -> list[str]:
-        return [origin.strip() for origin in self.allow_origins.split(",") if origin.strip()]
+        raw_value = os.getenv(
+            "CARESENSE_ALLOW_ORIGINS",
+            "http://localhost:3000,http://localhost:5173,https://caresense.app",
+        )
+        return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
 
 
 @lru_cache
