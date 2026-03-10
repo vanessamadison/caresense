@@ -48,7 +48,7 @@ The CareSense frontend has been completely redesigned in v2 to provide a sleek, 
   <img src="assets/screenshots/web-patient.png" width="48%" alt="Patient Web View" />
   <img src="assets/screenshots/web-provider.png" width="48%" alt="Provider Web View" />
   <br />
-  <em>Figure 1: Sleek web interfaces for patient triage (left) and provider review dashboard (right).</em>
+  <em>Sleek web interfaces for patient triage (left) and provider review dashboard (right).</em>
 </p>
 
 <p align="center">
@@ -56,7 +56,7 @@ The CareSense frontend has been completely redesigned in v2 to provide a sleek, 
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/mobile-provider.png" width="24%" alt="Provider Mobile View" />
   <br />
-  <em>Figure 2: Mobile-optimized views ensuring clinical decision support is accessible on the go.</em>
+  <em>Mobile-optimized views ensuring clinical decision support is accessible on the go.</em>
 </p>
 
 ### 𝘙𝘦𝘴𝘰𝘶𝘳𝘤𝘦 𝘖𝘱𝘵𝘪𝘮𝘪𝘻𝘢𝘵𝘪𝘰𝘯 & 𝘓𝘰𝘸 𝘜𝘳𝘨𝘦𝘯𝘤𝘺 𝘛𝘳𝘪𝘢𝘨𝘦
@@ -67,17 +67,17 @@ CareSense is designed to identify low-urgency cases that do not require immediat
   <img src="assets/screenshots/low-desktop-input.png" width="48%" alt="Low Urgency Input Desktop" />
   <img src="assets/screenshots/low-desktop-metrics.png" width="48%" alt="Low Urgency Metrics Desktop" />
   <br />
-  <em>Figure 3: Desktop workflow showing a low-urgency symptom entry and the resulting AI-driven metrics and recommendations.</em>
+  <em>Desktop workflow showing a low-urgency symptom entry and the resulting AI-driven metrics and recommendations.</em>
 </p>
 
 <p align="center">
   <img src="assets/screenshots/low-phone-input.png" width="30%" alt="Low Urgency Input Phone" />
   &nbsp;
+  <img src="assets/screenshots/low-phone-result.png" width="30%" alt="Low Urgency Result Phone" />
   <img src="assets/screenshots/low-phone-metrics.png" width="30%" alt="Low Urgency Metrics Phone" />
   &nbsp;
-  <img src="assets/screenshots/low-phone-result.png" width="30%" alt="Low Urgency Result Phone" />
   <br />
-  <em>Figure 4: Mobile workflow for low-urgency triage, providing clear guidance to patients.</em>
+  <em>Mobile workflow for low-urgency triage, providing clear guidance to patients.</em>
 </p>
 
 ---
