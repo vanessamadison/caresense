@@ -7,7 +7,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
-from caresense.explainability import get_lime_explainer, get_shap_explainer
 from caresense.parsers import get_document_parser, get_sanitizer
 from caresense.schemas.document import DocumentTriageRequest, DocumentUploadResponse
 from caresense.schemas.explain import (
@@ -171,9 +170,13 @@ def explain_prediction(request: ExplainRequest) -> ExplainResponse:
         text = sanitizer.sanitize(request.text)
 
         if request.method == "shap":
+            from caresense.explainability import get_shap_explainer
+
             explainer = get_shap_explainer()
             result = explainer.explain(text)
         else:  # lime
+            from caresense.explainability import get_lime_explainer
+
             explainer = get_lime_explainer()
             result = explainer.explain(text)
 
@@ -220,6 +223,8 @@ def global_importance() -> GlobalImportanceResponse:
         - Cached results
     """
     try:
+        from caresense.explainability import get_shap_explainer
+
         explainer = get_shap_explainer()
         features_data = explainer.get_global_feature_importance()
 
